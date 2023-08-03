@@ -1,0 +1,113 @@
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script> <!--jquery 문법 사용-->
+
+<script>
+    let content ;
+    window.onload = () => {
+        content = document.getElementById("content");
+        const getMembers = document.querySelector("#getMembers");
+        getMembers.addEventListener("click", getMember);
+
+        const registerView = document.querySelector("#registerView");
+        registerView.addEventListener("click", regview);
+    }
+    const getMember = () => {
+       // alert("get 함수 호출")
+       fetch ("/get_members", {method : "get"})
+       .then( res => res.json() )
+       .then(data =>{
+       // console.log(data);
+        let msg = "<table border='1'>";
+        msg += "<tr> <th>아이디</th> <th>이름</th> <th>주소</th> </tr>"
+            data.forEach( member => {
+                msg += "<tr>"
+                msg += `<td>${member.id}</td> <td>${member.name}</td> <td>${member.addr}</td>`
+                msg += "</tr>"
+            });
+        msg += "</table>";
+        content.innerHTML = msg;
+       })
+    }
+    const regview = () => {
+        let msg = `
+        <form id="form">
+            <input type="text" name="id" placeholder="input id"><br>
+            <input type="text" name="pwd" placeholder="input pwd"><br>
+            <input type="text" name="name" placeholder="input name"><br>
+            <input type="text" name="addr" placeholder="input addr"><br>
+            <input type="button" onclick="register()" value="등록"><br>
+        </form>`;
+        content.innerHTML = msg;
+    }
+    const register = () => {
+        //alert("register")
+        const arr = $("#form").serializeArray();    
+        //입력한 데이터를 한꺼번에 가져옴 (name으로 가져와야함)
+        console.log(arr);   //0 : {name : 'id', value : '1'} 처럼 저장이 됨
+        console.log(arr[0].name);   //arr key 값
+        console.log(arr[0].value);  //arr value 값
+        let data = {};
+        /* 데이터 가져오는 3가지 방법
+        data[arr[0].name] = arr[0].value;
+        data[arr[1].name] = arr[1].value;
+        data[arr[2].name] = arr[2].value;
+        data[arr[3].name] = arr[3].value;
+        console.log("data => ", data) //{id: '1', pwd: '2', name: '3', addr: '4'} 출력
+        */
+       /*
+        for( var i=0; i < arr.length; i++){
+            data[arr[i].name] = arr[i].value;
+        }*/
+        arr.forEach( d => {
+            data[d.name] = d.value;  
+        })
+        fetch ("/register", {
+            method : "post",
+            headers : {"Content-Type":"application/json"}, //보내는 데이터는 json 방식으로 보낼거임
+            body : JSON.stringify(data) //json 으로 사용하는 데이터로 변환해서 보냄
+        })
+       .then( res => res.json() )   //데이터 돌려받기
+       .then( result => {
+            if(result == 1){
+                alert("회원가입 성공!!")
+                getMember();
+            }
+       })
+    }
+
+    function del(){
+        const delId = document.getElementById("del_id");
+        fetch("/register",{ 
+        method : "delete",
+        headers : {"Content-Type" : "application/json"},
+        body : JSON.stringify({id : delId.value})
+        })
+        .then( res => res.json())
+        .then( result => {
+            if(result == 1)
+                getMember();
+        })
+    }
+
+    function search(){
+                //document.getElementById("s_id").value;
+        //fetch("/search?id="+$("#s_id").val(), {method: "get"})   //get 방식은 body 사용 불가
+        fetch("/search/"+$("#s_id").val(), {method: "get"})
+        .then( res => res.json())
+        .then( data => {
+            console.log("search : ", data);
+        })
+    }
+
+</script>
+<h3>제목</h3>
+<hr>
+<div id="content"></div>
+<hr>
+<button type="button" id="getMembers">목록보기</button>
+<button type="button" id="registerView">데이터추가</button>
+<hr>
+<input type="text" id="del_id">
+<button type="button" onclick="del()" >삭제</button><br>
+
+<input type="text" id="s_id">
+<button type="button" onclick="search()" >조회</button>

@@ -1,0 +1,38 @@
+<script>
+    let txt;
+    window.onload =() =>{
+        txt = document.querySelector("#txt");
+    }
+    const getFunc = () => {
+        fetch("/test", {method : "get" })   //요청 메소드 작성해주기
+        //.then(res => res.json() )
+        .then(res => { return res.json(); })    //{} 없으면 바로 return 으로 처리되는 값임 
+        .then(data => {console.log(data);
+            txt.innerHTML = data;
+        })
+    }
+    const postFunc = () => {
+        fetch("/test", {method : "post" })   //요청 메소드 작성해주기
+        .then(res => res.json())
+        //.then(res => { return res.json(); })
+        .then(data => {console.log(data);
+            txt.innerHTML = data;
+        })
+    }
+    const putFunc = async () => {
+        const res = await fetch("/test", {method : "put" })   //요청 메소드 작성해주기
+        const data = await res.json()
+        txt.innerHTML = data;
+    }
+    const delFunc = async () => {
+        const res = await fetch("/test", {method : "delete" })   //요청 메소드 작성해주기
+        const data = await res.json()
+        txt.innerHTML = data;
+    }
+</script>
+
+<span id="txt">내용</span><hr>
+<button type="button" onclick="getFunc()">get</button>
+<button type="button" onclick="postFunc()">post</button>
+<button type="button" onclick="putFunc()">put</button>
+<button type="button" onclick="delFunc()">delete</button>

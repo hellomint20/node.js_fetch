@@ -1,0 +1,29 @@
+<h3>fetch_count</h3>
+
+<script>
+    async function test(){
+        const res = await fetch("/get_count");    
+        console.log(res);   //await 없으면 Promise 출력 //await 있으면 response 출력
+        const data = await res.json();
+        console.log(data); //await 없으면 Promise 출력 //await 있으면 data(cnt) 출력
+        document.getElementById("cnt").innerHTML = data.cnt;  
+    /*function test(){
+        fetch("/get_count") //비동기 방식
+        .then( res =>{
+            console.log(res);
+            return res.json();  //응답한 결과를 return
+        })
+        .then( data => {
+            console.log("data: ", data);    //data:  {cnt: 10}
+            console.log("data.cnt: ", data.cnt);    //data.cnt:  10
+            document.getElementById("cnt").innerHTML = data.cnt;    
+            //id cnt 있는 쪽에 cnt 값을 전달
+        })*/
+    }
+</script>
+
+<h1>월</h1> <h1>화</h1> <h1>수</h1> 
+<h1>목</h1> <h1>금</h1>
+
+<button onclick="test()">클릭</button> 
+<label id="cnt">0</label>
